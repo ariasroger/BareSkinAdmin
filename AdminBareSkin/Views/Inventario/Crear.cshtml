@@ -1,0 +1,457 @@
+﻿@model AdminBareSkin.Models.Producto
+
+@{
+    ViewData["Title"] = "Nuevo producto | Bare Skin";
+}
+
+<style>
+    body {
+        background: #101010 !important;
+        color: #f5f0e8;
+    }
+
+    .create-page {
+        max-width: 1150px;
+        margin: auto;
+        padding: 35px 22px 60px;
+    }
+
+    .brand-label {
+        color: #c7a878;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 4px;
+    }
+
+    .page-title {
+        font-family: Georgia, serif;
+        color: #f5eadb;
+        font-size: clamp(30px, 4vw, 42px);
+        margin: 10px 0;
+    }
+
+    .page-description {
+        color: #a39a8e;
+        font-size: 14px;
+        margin-bottom: 28px;
+    }
+
+    .top-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+    }
+
+    .btn-outline-gold {
+        display: inline-block;
+        text-decoration: none;
+        color: #d7bd92;
+        border: 1px solid #94764d;
+        border-radius: 9px;
+        padding: 11px 17px;
+        transition: .2s;
+    }
+
+        .btn-outline-gold:hover {
+            background: #c7a878;
+            color: #17130e;
+        }
+
+    .btn-gold {
+        background: linear-gradient(135deg, #ddc49c, #ad8954);
+        color: #17130e;
+        border: none;
+        border-radius: 9px;
+        padding: 13px 23px;
+        font-weight: 700;
+        transition: .25s;
+    }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px #c7a87830;
+        }
+
+    .create-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(250px, .8fr);
+        gap: 22px;
+        align-items: start;
+    }
+
+    .form-card, .summary-card {
+        background: linear-gradient(145deg, #202020, #171717);
+        border: 1px solid #39332b;
+        border-radius: 16px;
+        padding: 28px;
+    }
+
+    .section-title {
+        font-family: Georgia, serif;
+        color: #e5d1b1;
+        font-size: 22px;
+        margin-bottom: 7px;
+    }
+
+    .section-description {
+        color: #999087;
+        font-size: 12px;
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        color: #d7c6ae;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 9px;
+    }
+
+    .form-control {
+        background: #111 !important;
+        border: 1px solid #494137 !important;
+        color: #f5f0e8 !important;
+        border-radius: 9px !important;
+        padding: 13px 14px !important;
+        min-height: 48px;
+        box-shadow: none !important;
+    }
+
+        .form-control:focus {
+            border-color: #c7a878 !important;
+            box-shadow: 0 0 0 3px #c7a87820 !important;
+        }
+
+        .form-control::placeholder {
+            color: #777;
+        }
+
+    .field-group {
+        margin-bottom: 21px;
+    }
+
+    .input-hint {
+        color: #82796e;
+        font-size: 11px;
+        margin-top: 7px;
+    }
+
+    .text-danger {
+        font-size: 12px;
+    }
+
+    .summary-card {
+        position: sticky;
+        top: 20px;
+    }
+
+    .summary-brand {
+        color: #c7a878;
+        font-size: 10px;
+        letter-spacing: 3px;
+        font-weight: 700;
+    }
+
+    .summary-heading {
+        font-family: Georgia, serif;
+        color: #f1e5d3;
+        font-size: 25px;
+        margin: 12px 0 24px;
+    }
+
+    .summary-line {
+        border-bottom: 1px solid #39332b;
+        padding: 15px 0;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 12px;
+        color: #aaa197;
+    }
+
+        .summary-line strong {
+            color: #e3c69a;
+            font-size: 13px;
+        }
+
+    .profit-box {
+        background: #29241e;
+        border: 1px solid #59482e;
+        border-radius: 12px;
+        padding: 18px;
+        margin-top: 23px;
+    }
+
+    .profit-label {
+        color: #b6a48b;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .profit-value {
+        color: #d9bd8d;
+        font-family: Georgia, serif;
+        font-size: 27px;
+        margin-top: 8px;
+    }
+
+    .summary-note {
+        color: #92887d;
+        font-size: 11px;
+        line-height: 1.7;
+        margin-top: 20px;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 30px;
+        padding-top: 23px;
+        border-top: 1px solid #39332b;
+    }
+
+    @@media (max-width: 800px) {
+        .create-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-card {
+            position: static;
+        }
+    }
+
+    @@media (max-width: 500px) {
+        .create-page {
+            padding: 23px 13px 40px;
+        }
+
+        .form-card, .summary-card {
+            padding: 20px 16px;
+        }
+
+        .form-actions > * {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="create-page">
+
+    <div class="brand-label">BARE SKIN / PERFUMERÍA</div>
+
+    <h1 class="page-title">Nuevo producto</h1>
+
+    <p class="page-description">
+        Agregá una nueva fragancia y mantené el control de tu negocio.
+    </p>
+
+    <div class="top-actions">
+        <a asp-controller="Inventario"
+           asp-action="Index"
+           class="btn-outline-gold">
+            ← Volver al inventario
+        </a>
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="btn-outline-gold">
+            Dashboard
+        </a>
+    </div>
+
+    <div class="create-grid">
+
+        <div class="form-card">
+
+            <h2 class="section-title">Información del producto</h2>
+
+            <p class="section-description">
+                Completá los datos de la fragancia que vas a ingresar.
+            </p>
+
+            <form asp-controller="Inventario"
+                  asp-action="Crear"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="field-group">
+                    <label asp-for="Nombre" class="form-label">
+                        Nombre de la fragancia
+                    </label>
+
+                    <input asp-for="Nombre"
+                           class="form-control"
+                           placeholder="Ej. Odyssey Mega" />
+
+                    <span asp-validation-for="Nombre"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="field-group">
+                    <label asp-for="PrecioCompra" class="form-label">
+                        Precio de compra (₡)
+                    </label>
+
+                    <input asp-for="PrecioCompra"
+                           type="number"
+                           step="0.01"
+                           min="0.01"
+                           class="form-control"
+                           placeholder="Ej. 12000" />
+
+                    <div class="input-hint">
+                        Lo que pagás por adquirir el perfume.
+                    </div>
+
+                    <span asp-validation-for="PrecioCompra"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="field-group">
+                    <label asp-for="PrecioVenta" class="form-label">
+                        Precio de venta (₡)
+                    </label>
+
+                    <input asp-for="PrecioVenta"
+                           type="number"
+                           step="0.01"
+                           min="0.01"
+                           class="form-control"
+                           placeholder="Ej. 18000" />
+
+                    <div class="input-hint">
+                        Precio al que ofrecerás la fragancia.
+                    </div>
+
+                    <span asp-validation-for="PrecioVenta"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="field-group">
+                    <label asp-for="Stock" class="form-label">
+                        Cantidad inicial
+                    </label>
+
+                    <input asp-for="Stock"
+                           type="number"
+                           min="0"
+                           step="1"
+                           class="form-control"
+                           placeholder="Ej. 5" />
+
+                    <div class="input-hint">
+                        Unidades disponibles para la venta.
+                    </div>
+
+                    <span asp-validation-for="Stock"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="form-actions">
+
+                    <a asp-controller="Inventario"
+                       asp-action="Index"
+                       class="btn-outline-gold">
+                        Cancelar
+                    </a>
+
+                    <button type="submit" class="btn-gold">
+                        Registrar producto
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <aside class="summary-card">
+
+            <div class="summary-brand">BARE SKIN</div>
+
+            <h3 class="summary-heading">Resumen de rentabilidad</h3>
+
+            <div class="summary-line">
+                <span>Precio de compra</span>
+                <strong id="resumenCompra">₡0</strong>
+            </div>
+
+            <div class="summary-line">
+                <span>Precio de venta</span>
+                <strong id="resumenVenta">₡0</strong>
+            </div>
+
+            <div class="summary-line">
+                <span>Unidades iniciales</span>
+                <strong id="resumenStock">0</strong>
+            </div>
+
+            <div class="profit-box">
+                <div class="profit-label">
+                    Ganancia estimada por unidad
+                </div>
+
+                <div class="profit-value" id="resumenGanancia">
+                    ₡0
+                </div>
+            </div>
+
+            <p class="summary-note">
+                La ganancia mostrada es una estimación basada en el precio
+                de compra y venta. No contempla otros gastos operativos,
+                descuentos ni costos adicionales.
+            </p>
+
+        </aside>
+
+    </div>
+
+</div>
+
+<script>
+    const compra = document.getElementById("PrecioCompra");
+    const venta = document.getElementById("PrecioVenta");
+    const stock = document.getElementById("Stock");
+
+    const formatoColon = new Intl.NumberFormat("es-CR", {
+        style: "currency",
+        currency: "CRC",
+        maximumFractionDigits: 0
+    });
+
+    function actualizarResumen() {
+        const precioCompra = Number(compra.value) || 0;
+        const precioVenta = Number(venta.value) || 0;
+        const cantidad = Number(stock.value) || 0;
+
+        document.getElementById("resumenCompra").textContent =
+            formatoColon.format(precioCompra);
+
+        document.getElementById("resumenVenta").textContent =
+            formatoColon.format(precioVenta);
+
+        document.getElementById("resumenStock").textContent =
+            cantidad;
+
+        document.getElementById("resumenGanancia").textContent =
+            formatoColon.format(precioVenta - precioCompra);
+    }
+
+    [compra, venta, stock].forEach(campo => {
+        campo.addEventListener("input", actualizarResumen);
+    });
+
+    actualizarResumen();
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,203 @@
+﻿@model AdminBareSkin.Models.CrearGastoViewModel
+
+@{
+    ViewData["Title"] = "Registrar gasto";
+    var cuentas = ViewBag.Cuentas as IEnumerable<AdminBareSkin.Models.CuentaFinanciera>
+        ?? Enumerable.Empty<AdminBareSkin.Models.CuentaFinanciera>();
+    var categorias = ViewBag.Categorias as IEnumerable<string>
+        ?? Enumerable.Empty<string>();
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Registrar gasto | Bare Skin</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                background: #101010;
+                color: #f5f0e8;
+                font-family: 'DM Sans', sans-serif;
+            }
+
+            .container {
+                max-width: 760px;
+                width: 92%;
+                margin: 45px auto;
+            }
+
+            .card {
+                background: #191714;
+                border: 1px solid #443927;
+                border-radius: 13px;
+                padding: 30px;
+            }
+
+            h1 {
+                color: #e5c58b;
+                font: 30px 'Playfair Display', serif;
+                margin-top: 0;
+            }
+
+            p {
+                color: #bcb5aa;
+            }
+
+            label {
+                display: block;
+                color: #d8c6a2;
+                margin: 18px 0 8px;
+                font-size: 13px;
+            }
+
+            input, select, textarea {
+                width: 100%;
+                padding: 13px;
+                border-radius: 7px;
+                border: 1px solid #51432e;
+                background: #111;
+                color: #f5f0e8;
+                font: inherit;
+            }
+
+            textarea {
+                min-height: 100px;
+                resize: vertical;
+            }
+
+            .grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+
+            .btn {
+                display: inline-block;
+                padding: 13px 20px;
+                border: 0;
+                border-radius: 7px;
+                background: #d3b477;
+                color: #15120d;
+                font-weight: 700;
+                cursor: pointer;
+                text-decoration: none;
+            }
+
+            .btn-secondary {
+                background: transparent;
+                border: 1px solid #8f7549;
+                color: #e4c88e;
+            }
+
+            .actions {
+                display: flex;
+                gap: 12px;
+                margin-top: 25px;
+                flex-wrap: wrap;
+            }
+
+            .validation {
+                color: #ef9c91;
+                font-size: 13px;
+            }
+
+            .notice {
+                padding: 14px;
+                background: #211e19;
+                border-left: 3px solid #d3b477;
+                color: #e4d5b8;
+                margin: 20px 0;
+            }
+
+            @@media(max-width:600px) {
+                .grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .card {
+                    padding: 20px;
+                }
+
+                .actions .btn {
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <section class="card">
+            <div style="color:#c6ad80;font-size:12px;letter-spacing:2px">BARE SKIN · FINANZAS</div>
+            <h1>Registrar gasto</h1>
+            <p>Registrá la salida de dinero y dejá constancia de quién la autorizó.</p>
+
+            <form asp-action="CrearGasto" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All" class="validation"></div>
+
+                <label asp-for="Concepto">Concepto del gasto</label>
+                <input asp-for="Concepto" placeholder="Ej. Publicidad en Instagram" />
+                <span asp-validation-for="Concepto" class="validation"></span>
+
+                <label asp-for="Descripcion">¿En qué se gastó?</label>
+                <textarea asp-for="Descripcion" placeholder="Explicá brevemente el motivo del gasto"></textarea>
+                <span asp-validation-for="Descripcion" class="validation"></span>
+
+                <div class="grid">
+                    <div>
+                        <label asp-for="Monto">Monto en colones</label>
+                        <input asp-for="Monto" type="number" min="0.01" step="0.01" placeholder="15000" />
+                        <span asp-validation-for="Monto" class="validation"></span>
+                    </div>
+                    <div>
+                        <label asp-for="Categoria">Categoría</label>
+                        <select asp-for="Categoria">
+                            <option value="">Seleccioná una categoría</option>
+                            @foreach (var categoria in categorias)
+                            {
+                                <option value="@categoria">@categoria</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Categoria" class="validation"></span>
+                    </div>
+                </div>
+
+                <label asp-for="CuentaFinancieraId">¿De cuál cuenta salió el dinero?</label>
+                <select asp-for="CuentaFinancieraId">
+                    <option value="">Seleccioná una cuenta</option>
+                    @foreach (var cuenta in cuentas)
+                    {
+                        <option value="@cuenta.Id">@cuenta.Nombre</option>
+                    }
+                </select>
+                <span asp-validation-for="CuentaFinancieraId" class="validation"></span>
+
+                <label asp-for="TipoGasto">Tipo de salida</label>
+                <select asp-for="TipoGasto">
+                    <option value="Operativo">Gasto operativo</option>
+                    <option value="Inventario">Compra de inventario</option>
+                </select>
+
+                <div class="notice">
+                    <strong>Autorización directa:</strong>
+                    el usuario que registra este gasto quedará registrado también como responsable de autorizarlo.
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn">Guardar y autorizar gasto</button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

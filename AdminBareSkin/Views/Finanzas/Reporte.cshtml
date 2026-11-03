@@ -1,0 +1,661 @@
+﻿@model AdminBareSkin.Models.ReporteFinancieroViewModel
+@using System.Text.Json
+
+@{
+    Layout = null;
+
+    var mesesJson = JsonSerializer.Serialize(Model.Meses.Select(m => m.NombreMes));
+    var ventasJson = JsonSerializer.Serialize(Model.Meses.Select(m => m.Ventas));
+    var gananciasJson = JsonSerializer.Serialize(Model.Meses.Select(m => m.GananciaNeta));
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Reportes financieros | Bare Skin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                background: #101010;
+                color: #f5eee2;
+                font-family: 'DM Sans', sans-serif;
+            }
+
+            header {
+                padding: 24px 5%;
+                border-bottom: 1px solid #403322;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .brand {
+                color: #d9b875;
+                font: 700 27px 'Playfair Display', serif;
+                letter-spacing: 3px;
+            }
+
+                .brand small {
+                    display: block;
+                    font: 10px 'Playfair Display', serif;
+                    letter-spacing: 3px;
+                    margin-top: 4px;
+                }
+
+            nav a {
+                color: #e9d5ad;
+                text-decoration: none;
+                margin-left: 22px;
+                font-size: 12px;
+            }
+
+            main {
+                max-width: 1250px;
+                margin: 40px auto;
+                padding: 0 25px;
+            }
+
+            .eyebrow {
+                color: #d9b875;
+                letter-spacing: 2px;
+                font-size: 12px;
+            }
+
+            h1, h2 {
+                font-family: 'Playfair Display', serif;
+                color: #e4c486;
+                font-weight: 500;
+            }
+
+            h1 {
+                font-size: 38px;
+                margin: 10px 0;
+            }
+
+            h2 {
+                font-size: 23px;
+                margin-top: 0;
+            }
+
+            .subtitle {
+                color: #c8c0b4;
+            }
+
+            .toolbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: end;
+                gap: 15px;
+                flex-wrap: wrap;
+                margin: 30px 0;
+            }
+
+            .filter {
+                display: flex;
+                gap: 10px;
+                align-items: end;
+            }
+
+            label {
+                display: block;
+                color: #d9b875;
+                font-size: 12px;
+                margin-bottom: 7px;
+            }
+
+            input {
+                background: #191816;
+                color: #fff;
+                border: 1px solid #59462d;
+                border-radius: 6px;
+                padding: 12px;
+                width: 130px;
+                font: inherit;
+            }
+
+            button {
+                border: 0;
+                cursor: pointer;
+                display: inline-block;
+                padding: 12px 18px;
+                border-radius: 7px;
+                background: #d7b574;
+                color: #17130d;
+                font-weight: 700;
+                font-size: 13px;
+            }
+
+            .cards {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+                margin: 25px 0;
+            }
+
+            .card, .panel {
+                background: #191816;
+                border: 1px solid #493a27;
+                border-radius: 12px;
+                padding: 22px;
+            }
+
+                .card span {
+                    color: #cbb991;
+                    font-size: 12px;
+                }
+
+            .amount {
+                display: block;
+                margin-top: 12px;
+                font: 25px 'Playfair Display', serif;
+                color: #e6c47e;
+            }
+
+            .green {
+                color: #78d6a7;
+            }
+
+            .red {
+                color: #ff8585;
+            }
+
+            .panel {
+                margin: 25px 0;
+            }
+
+            .chart-container {
+                position: relative;
+                height: 340px;
+                width: 100%;
+            }
+
+            .summary {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+            }
+
+            .summary-item {
+                padding: 17px;
+                border-radius: 8px;
+                background: #211e19;
+            }
+
+                .summary-item span {
+                    display: block;
+                    color: #cbb991;
+                    font-size: 12px;
+                }
+
+                .summary-item strong {
+                    display: block;
+                    color: #e6c47e;
+                    margin-top: 8px;
+                    font-size: 18px;
+                }
+
+            .table-wrap {
+                overflow-x: auto;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                min-width: 750px;
+            }
+
+            th {
+                text-align: left;
+                color: #d9b875;
+                font-size: 11px;
+                padding: 14px 10px;
+                border-bottom: 1px solid #493a27;
+            }
+
+            td {
+                padding: 14px 10px;
+                border-bottom: 1px solid #393127;
+                font-size: 13px;
+            }
+
+            .positive {
+                color: #78d6a7;
+            }
+
+            .negative {
+                color: #ff8585;
+            }
+
+            footer {
+                margin: 30px 0;
+            }
+
+                footer a {
+                    color: #d9b875;
+                }
+
+            @@media(max-width:850px) {
+                .cards {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+
+                .summary {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @@media(max-width:600px) {
+                header {
+                    align-items: flex-start;
+                    gap: 15px;
+                    flex-direction: column;
+                }
+
+                nav a {
+                    margin: 0 12px 0 0;
+                }
+
+                .cards {
+                    grid-template-columns: 1fr;
+                }
+
+                .filter {
+                    width: 100%;
+                }
+
+                    .filter input {
+                        flex: 1;
+                    }
+
+                main {
+                    margin-top: 30px;
+                }
+            }
+
+            @@media print {
+                body {
+                    background: white;
+                    color: #222;
+                }
+
+                header, .toolbar, footer {
+                    display: none !important;
+                }
+
+                main {
+                    max-width: 100%;
+                    margin: 0;
+                    padding: 0;
+                }
+
+                h1, h2 {
+                    color: #795d2c;
+                }
+
+                .card, .panel {
+                    background: white;
+                    border: 1px solid #ccc;
+                    color: #222;
+                    break-inside: avoid;
+                }
+
+                    .card span, .summary-item span {
+                        color: #555;
+                    }
+
+                .amount, .summary-item strong {
+                    color: #795d2c;
+                }
+
+                th, td {
+                    color: #222;
+                }
+            }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="brand">
+            BARE SKIN
+            <small>PERFUMERÍA & FRAGANCIAS</small>
+        </div>
+
+        <nav>
+            <a asp-controller="Home" asp-action="Index">DASHBOARD</a>
+            <a asp-controller="Inventario" asp-action="Index">INVENTARIO</a>
+            <a asp-controller="Ventas" asp-action="Index">VENTAS</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <div class="eyebrow">BARE SKIN · ADMINISTRACIÓN</div>
+
+        <h1>Reportes financieros</h1>
+
+        <p class="subtitle">
+            Análisis del rendimiento de Bare Skin durante @Model.Anio.
+        </p>
+
+        <div class="toolbar">
+
+            <form asp-controller="Finanzas"
+                  asp-action="Reporte"
+                  method="get"
+                  class="filter">
+
+                <div>
+                    <label for="anio">SELECCIONAR AÑO</label>
+
+                    <input type="number"
+                           id="anio"
+                           name="anio"
+                           value="@Model.Anio"
+                           min="2020"
+                           max="@DateTime.UtcNow.AddHours(-6).Year" />
+                </div>
+
+                <button type="submit">
+                    Consultar
+                </button>
+
+            </form>
+
+            <button onclick="window.print()">
+                Guardar reporte en PDF
+            </button>
+
+        </div>
+
+        <!-- INDICADORES PRINCIPALES -->
+
+        <section class="cards">
+
+            <div class="card">
+                <span>VENTAS TOTALES</span>
+                <strong class="amount">
+                    @Model.TotalVentas.ToString("C2")
+                </strong>
+            </div>
+
+            <div class="card">
+                <span>GANANCIA BRUTA</span>
+                <strong class="amount green">
+                    @Model.GananciaBruta.ToString("C2")
+                </strong>
+            </div>
+
+            <div class="card">
+                <span>GASTOS OPERATIVOS</span>
+                <strong class="amount red">
+                    @Model.GastosOperativos.ToString("C2")
+                </strong>
+            </div>
+
+            <div class="card">
+                <span>GANANCIA NETA OPERATIVA</span>
+
+                <strong class="amount @(Model.GananciaNeta >= 0 ? "green" : "red")">
+                    @Model.GananciaNeta.ToString("C2")
+                </strong>
+            </div>
+
+        </section>
+
+        <!-- RESUMEN GENERAL -->
+
+        <section class="panel">
+
+            <h2>Resumen general del negocio</h2>
+
+            <div class="summary">
+
+                <div class="summary-item">
+                    <span>Costo de productos vendidos</span>
+                    <strong>@Model.CostoProductos.ToString("C2")</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Compras de inventario</span>
+                    <strong>@Model.ComprasInventario.ToString("C2")</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Ingresos registrados</span>
+                    <strong>@Model.TotalIngresos.ToString("C2")</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Egresos registrados</span>
+                    <strong>@Model.TotalEgresos.ToString("C2")</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Cantidad de ventas</span>
+                    <strong>@Model.CantidadVentas</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Unidades vendidas</span>
+                    <strong>@Model.UnidadesVendidas</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- GRÁFICO -->
+
+        <section class="panel">
+
+            <h2>Ventas y ganancias por mes</h2>
+
+            <div class="chart-container">
+                <canvas id="graficoVentas"></canvas>
+            </div>
+
+        </section>
+
+        <!-- DETALLE MENSUAL -->
+
+        <section class="panel">
+
+            <h2>Detalle mensual</h2>
+
+            <div class="table-wrap">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>MES</th>
+                            <th>VENTAS</th>
+                            <th>COSTOS</th>
+                            <th>GANANCIA BRUTA</th>
+                            <th>GASTOS OPERATIVOS</th>
+                            <th>GANANCIA NETA</th>
+                            <th>CANTIDAD DE VENTAS</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var mes in Model.Meses)
+                        {
+                            <tr>
+                                <td>@mes.NombreMes</td>
+
+                                <td>@mes.Ventas.ToString("C2")</td>
+
+                                <td>@mes.Costos.ToString("C2")</td>
+
+                                <td>@mes.GananciaBruta.ToString("C2")</td>
+
+                                <td>@mes.GastosOperativos.ToString("C2")</td>
+
+                                <td class="@(mes.GananciaNeta >= 0 ? "positive" : "negative")">
+                                    @mes.GananciaNeta.ToString("C2")
+                                </td>
+
+                                <td>@mes.CantidadVentas</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- CUENTAS FINANCIERAS -->
+
+        <section class="panel">
+
+            <h2>Movimientos por cuenta financiera</h2>
+
+            <div class="table-wrap">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>CUENTA</th>
+                            <th>INGRESOS</th>
+                            <th>EGRESOS</th>
+                            <th>BALANCE</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (!Model.Cuentas.Any())
+                        {
+                            <tr>
+                                <td colspan="4">
+                                    No hay movimientos financieros para este año.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var cuenta in Model.Cuentas)
+                            {
+                                <tr>
+                                    <td>@cuenta.Nombre</td>
+
+                                    <td class="positive">
+                                        @cuenta.Ingresos.ToString("C2")
+                                    </td>
+
+                                    <td class="negative">
+                                        @cuenta.Egresos.ToString("C2")
+                                    </td>
+
+                                    <td>
+                                        @cuenta.Saldo.ToString("C2")
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+
+        </section>
+
+        <footer>
+            <a asp-controller="Finanzas" asp-action="Index">
+                ← Volver al panel financiero
+            </a>
+        </footer>
+
+    </main>
+
+    <script>
+            const etiquetas = @Html.Raw(mesesJson);
+            const ventas = @Html.Raw(ventasJson);
+            const ganancias = @Html.Raw(gananciasJson);
+
+            new Chart(document.getElementById('graficoVentas'), {
+                type: 'bar',
+
+                data: {
+                    labels: etiquetas,
+
+                    datasets: [
+                        {
+                            label: 'Ventas',
+                            data: ventas,
+                            backgroundColor: 'rgba(215,181,116,0.75)',
+                            borderColor: '#d7b574',
+                            borderWidth: 1,
+                            borderRadius: 5
+                        },
+                        {
+                            label: 'Ganancia neta',
+                            data: ganancias,
+                            backgroundColor: 'rgba(120,214,167,0.65)',
+                            borderColor: '#78d6a7',
+                            borderWidth: 1,
+                            borderRadius: 5
+                        }
+                    ]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e9d5ad'
+                            }
+                        }
+                    },
+
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#cbb991'
+                            },
+                            grid: {
+                                color: 'rgba(255,255,255,0.05)'
+                            }
+                        },
+
+                        y: {
+                            beginAtZero: true,
+
+                            ticks: {
+                                color: '#cbb991',
+                                callback: function(value) {
+                                    return '₡' +
+                                        Number(value).toLocaleString('es-CR');
+                                }
+                            },
+
+                            grid: {
+                                color: 'rgba(255,255,255,0.08)'
+                            }
+                        }
+                    }
+                }
+            });
+    </script>
+
+</body>
+</html>

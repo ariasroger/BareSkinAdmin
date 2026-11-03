@@ -1,0 +1,457 @@
+﻿@model IEnumerable<AdminBareSkin.Models.CierreMensual>
+
+@{
+    Layout = null;
+    var cierres = Model ?? Enumerable.Empty<AdminBareSkin.Models.CierreMensual>();
+    var nombresMeses = new[] {
+        "", "Enero", "Febrero", "Marzo", "Abril", "Mayo",
+        "Junio", "Julio", "Agosto", "Septiembre", "Octubre",
+        "Noviembre", "Diciembre"
+    };
+    var ahora = DateTime.UtcNow.AddHours(-6);
+    var anioActual = ahora.Year;
+    var mesActual = ahora.Month;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cierres mensuales | Bare Skin</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                background: #101010;
+                color: #f5eee2;
+                font-family: 'DM Sans',sans-serif;
+            }
+
+            header {
+                padding: 25px 5%;
+                border-bottom: 1px solid #403322;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .brand {
+                color: #d9b875;
+                font: 700 27px 'Playfair Display',serif;
+                letter-spacing: 3px;
+            }
+
+                .brand small {
+                    display: block;
+                    font: 10px 'Playfair Display',serif;
+                    letter-spacing: 3px;
+                    margin-top: 4px;
+                }
+
+            nav a {
+                color: #e9d5ad;
+                text-decoration: none;
+                margin-left: 25px;
+                font-size: 12px;
+            }
+
+            main {
+                max-width: 1250px;
+                margin: 45px auto;
+                padding: 0 25px;
+            }
+
+            .eyebrow {
+                color: #d9b875;
+                letter-spacing: 2px;
+                font-size: 12px;
+            }
+
+            h1, h2, h3 {
+                font-family: 'Playfair Display',serif;
+                color: #e4c486;
+                font-weight: 500;
+            }
+
+            h1 {
+                font-size: 38px;
+                margin: 10px 0;
+            }
+
+            h2 {
+                margin-top: 0;
+            }
+
+            .subtitle {
+                color: #c8c0b4;
+            }
+
+            .panel {
+                background: #191816;
+                border: 1px solid #493a27;
+                border-radius: 12px;
+                padding: 24px;
+                margin: 28px 0;
+            }
+
+            .form-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr auto;
+                gap: 15px;
+                align-items: end;
+            }
+
+            label {
+                display: block;
+                color: #d9b875;
+                font-size: 12px;
+                margin-bottom: 8px;
+            }
+
+            input, select, textarea {
+                width: 100%;
+                padding: 12px;
+                background: #111;
+                color: #f5eee2;
+                border: 1px solid #59462d;
+                border-radius: 6px;
+                font: inherit;
+            }
+
+            button, .btn {
+                border: 0;
+                cursor: pointer;
+                display: inline-block;
+                padding: 12px 18px;
+                border-radius: 7px;
+                background: #d7b574;
+                color: #17130d;
+                font-weight: 700;
+                font-size: 13px;
+                text-decoration: none;
+            }
+
+            .btn-outline {
+                background: transparent;
+                color: #e2c17f;
+                border: 1px solid #9a7945;
+            }
+
+            .btn-danger {
+                background: #5a2925;
+                color: #ffd9d3;
+            }
+
+            .notice {
+                padding: 14px 18px;
+                border-radius: 7px;
+                margin: 15px 0;
+            }
+
+            .success {
+                background: #183426;
+                color: #9be0b9;
+                border-left: 3px solid #68bd8e;
+            }
+
+            .error {
+                background: #3b211e;
+                color: #ffaaa0;
+                border-left: 3px solid #d46b60;
+            }
+
+            .table-wrap {
+                overflow-x: auto;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                min-width: 1050px;
+            }
+
+            th {
+                text-align: left;
+                color: #d9b875;
+                font-size: 11px;
+                padding: 14px 9px;
+                border-bottom: 1px solid #493a27;
+            }
+
+            td {
+                padding: 15px 9px;
+                border-bottom: 1px solid #393127;
+                font-size: 13px;
+                vertical-align: top;
+            }
+
+            .status {
+                padding: 5px 9px;
+                border-radius: 20px;
+                font-size: 11px;
+                display: inline-block;
+            }
+
+            .closed {
+                color: #8fe0ae;
+                background: #183426;
+            }
+
+            .reopened {
+                color: #f3c878;
+                background: #3c301c;
+            }
+
+            .detail {
+                color: #c7bca9;
+                font-size: 12px;
+                line-height: 1.7;
+            }
+
+            .reopen-box {
+                min-width: 210px;
+            }
+
+                .reopen-box input {
+                    margin-bottom: 8px;
+                }
+
+            .history {
+                margin-top: 10px;
+                padding: 10px;
+                border-left: 2px solid #9a7945;
+                background: #211e19;
+            }
+
+                .history p {
+                    margin: 5px 0;
+                    font-size: 12px;
+                    color: #d0c4b1;
+                }
+
+            .empty {
+                text-align: center;
+                padding: 30px;
+                color: #bdb4a5;
+            }
+
+            footer {
+                margin: 25px 0;
+            }
+
+                footer a {
+                    color: #d9b875;
+                }
+
+            @@media(max-width:700px) {
+                header {
+                    align-items: flex-start;
+                    gap: 15px;
+                    flex-direction: column;
+                }
+
+                nav a {
+                    margin: 0 15px 0 0;
+                }
+
+                .form-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                main {
+                    margin-top: 30px;
+                }
+            }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">BARE SKIN<small>PERFUMERÍA & FRAGANCIAS</small></div>
+        <nav>
+            <a asp-controller="Home" asp-action="Index">DASHBOARD</a>
+            <a asp-controller="Inventario" asp-action="Index">INVENTARIO</a>
+            <a asp-controller="Ventas" asp-action="Index">VENTAS</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="eyebrow">BARE SKIN · ADMINISTRACIÓN</div>
+        <h1>Cierres mensuales</h1>
+        <p class="subtitle">Control de resultados, cierres y reaperturas del negocio.</p>
+
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="notice success">@TempData["Mensaje"]</div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="notice error">@TempData["Error"]</div>
+        }
+
+        <section class="panel">
+            <h2>Realizar cierre manual</h2>
+            <p class="detail">
+                Seleccioná un mes que ya haya finalizado. El sistema guardará una versión
+                del cierre con sus resultados financieros.
+            </p>
+
+            <form asp-controller="Finanzas" asp-action="CerrarMes" method="post">
+                @Html.AntiForgeryToken()
+                <div class="form-grid">
+                    <div>
+                        <label for="mes">MES</label>
+                        <select id="mes" name="mes" required>
+                            @for (int i = 1; i <= 12; i++)
+                            {
+                                <option value="@i" selected="@(i == (mesActual == 1 ? 12 : mesActual - 1))">
+                                    @nombresMeses[i]
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label for="anio">AÑO</label>
+                        <input id="anio" name="anio" type="number"
+                               min="2020" max="@anioActual"
+                               value="@(mesActual == 1 ? anioActual - 1 : anioActual)" required />
+                    </div>
+                    <div>
+                        <button type="submit"
+                                onclick="return confirm('¿Confirmás el cierre de este mes?');">
+                            Cerrar mes
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Historial de cierres</h2>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PERÍODO</th>
+                            <th>VERSIÓN</th>
+                            <th>ESTADO</th>
+                            <th>VENTAS</th>
+                            <th>COSTO PRODUCTOS</th>
+                            <th>GANANCIA BRUTA</th>
+                            <th>GASTOS OPERATIVOS</th>
+                            <th>GANANCIA NETA</th>
+                            <th>INFORMACIÓN</th>
+                            <th>ACCIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!cierres.Any())
+                        {
+                            <tr>
+                                <td colspan="10" class="empty">
+                                    Todavía no existen cierres mensuales registrados.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var cierre in cierres)
+                            {
+                                <tr>
+                                    <td>
+                                        @(cierre.Mes >= 1 && cierre.Mes <= 12
+                                            ? nombresMeses[cierre.Mes] : "Mes inválido")
+                                        @cierre.Anio
+                                    </td>
+                                    <td>V@cierre.Version</td>
+                                    <td>
+                                        @if (cierre.Estado == "Cerrado")
+                                        {
+                                            <span class="status closed">Cerrado</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status reopened">Reabierto</span>
+                                        }
+                                    </td>
+                                    <td>@cierre.TotalVentas.ToString("C2")</td>
+                                    <td>@cierre.CostoProductosVendidos.ToString("C2")</td>
+                                    <td>@cierre.GananciaBruta.ToString("C2")</td>
+                                    <td>@cierre.GastosOperativos.ToString("C2")</td>
+                                    <td>@cierre.GananciaNetaOperativa.ToString("C2")</td>
+                                    <td>
+                                        <div class="detail">
+                                            Tipo: @(cierre.Automatico ? "Automático" : "Manual")<br />
+                                            Fecha: @cierre.FechaCierre.AddHours(-6).ToString("dd/MM/yyyy HH:mm")<br />
+                                            Usuario: @(cierre.CerradoPor ?? "Sistema")<br />
+                                            Compras inventario: @cierre.ComprasInventario.ToString("C2")<br />
+                                            Ingresos: @cierre.IngresosRegistrados.ToString("C2")<br />
+                                            Egresos: @cierre.EgresosRegistrados.ToString("C2")<br />
+                                            Ventas realizadas: @cierre.CantidadVentas<br />
+                                            Unidades vendidas: @cierre.UnidadesVendidas
+                                        </div>
+
+                                        @if (cierre.Historial != null && cierre.Historial.Any())
+                                        {
+                                            <details class="history">
+                                                <summary>Ver historial de acciones</summary>
+                                                @foreach (var registro in cierre.Historial.OrderBy(h => h.Fecha))
+                                                {
+                                                    <p>
+                                                        <strong>@registro.Accion</strong><br />
+                                                        @registro.Fecha.AddHours(-6).ToString("dd/MM/yyyy HH:mm")<br />
+                                                        Usuario: @(registro.Usuario ?? "Sistema")<br />
+                                                        @if (!string.IsNullOrWhiteSpace(registro.Motivo))
+                                                        {
+                                                            <span>Motivo: @registro.Motivo</span>
+                                                        }
+                                                    </p>
+                                                }
+                                            </details>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (cierre.Estado == "Cerrado")
+                                        {
+                                            <form asp-controller="Finanzas"
+                                                  asp-action="ReabrirMes"
+                                                  method="post"
+                                                  class="reopen-box"
+                                                  onsubmit="return confirm('¿Confirmás que deseás reabrir este cierre?');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@cierre.Id" />
+                                                <input type="text"
+                                                       name="motivo"
+                                                       placeholder="Motivo de reapertura"
+                                                       maxlength="500"
+                                                       required />
+                                                <button type="submit" class="btn-danger">
+                                                    Reabrir mes
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="detail">Mes reabierto</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer>
+            <a asp-controller="Finanzas" asp-action="Index">← Volver al panel financiero</a>
+        </footer>
+    </main>
+</body>
+</html>

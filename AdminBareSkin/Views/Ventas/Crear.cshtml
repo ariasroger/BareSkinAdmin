@@ -1,0 +1,316 @@
+﻿
+@model AdminBareSkin.Models.CrearVentaViewModel
+@using AdminBareSkin.Models
+
+@{
+    ViewData["Title"] = "Registrar venta";
+    var productos = ViewBag.Productos as List<Producto> ?? new List<Producto>();
+    var metodos = ViewBag.MetodosPago as string[] ?? new[] { "Efectivo", "SINPE Móvil", "Tarjeta", "Transferencia" };
+    var cultura = System.Globalization.CultureInfo.GetCultureInfo("es-CR");
+}
+
+<style>
+    .crear-venta { color: #f4efe5; }
+    .venta-panel {
+        background: #171613;
+        border: 1px solid rgba(200,170,114,.2);
+        border-radius: 12px;
+        padding: 25px;
+    }
+    .venta-title { color: #e4cc9d; font-family: Georgia,serif; }
+    .venta-muted { color: #aaa396; }
+    .venta-label {
+        color: #c8aa72;
+        font-size: 11px;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+    }
+    .venta-input {
+        background: #10100f !important;
+        color: #f4efe5 !important;
+        border: 1px solid rgba(200,170,114,.25) !important;
+        border-radius: 7px;
+        padding: 11px;
+    }
+    .venta-input:focus {
+        border-color: #c8aa72 !important;
+        box-shadow: 0 0 0 2px rgba(200,170,114,.12) !important;
+    }
+    .venta-input option { background: #171613; color: white; }
+    .venta-btn {
+        background: #c8aa72;
+        color: #171613;
+        border: 0;
+        border-radius: 7px;
+        padding: 11px 18px;
+        font-weight: 700;
+    }
+    .venta-btn:hover { background: #e4cc9d; color: #171613; }
+    .venta-secondary {
+        background: transparent;
+        border: 1px solid rgba(200,170,114,.4);
+        color: #e4cc9d;
+        border-radius: 7px;
+        padding: 10px 15px;
+    }
+    .venta-secondary:hover { background: rgba(200,170,114,.1); color: white; }
+    .producto-row {
+        display: grid;
+        grid-template-columns: minmax(180px, 1fr) 110px 45px;
+        gap: 12px;
+        align-items: end;
+        margin-bottom: 13px;
+    }
+    .venta-total {
+        font-family: Georgia,serif;
+        font-size: 30px;
+        color: #e4cc9d;
+    }
+    .validation-summary-errors { color: #ff9b9b; }
+    .field-validation-error { color: #ff9b9b; font-size: 12px; }
+    @@media(max-width: 600px) {
+        .producto-row {
+            grid-template-columns: minmax(0, 1fr) 85px 38px;
+            gap: 7px;
+        }
+        .venta-panel { padding: 16px; }
+    }
+</style>
+
+<div class="container-fluid py-4 crear-venta">
+
+    <div class="mb-4">
+        <div class="venta-muted small">BARE SKIN · ADMINISTRACIÓN</div>
+        <h2 class="venta-title mt-2">Registrar nueva venta</h2>
+        <p class="venta-muted">Agregá los perfumes y confirmá la operación.</p>
+    </div>
+
+    <form asp-action="Crear" method="post">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="All" class="mb-3"></div>
+
+        <div class="venta-panel mb-4">
+            <h5 class="venta-title mb-4">Información de la venta</h5>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Cliente" class="form-label venta-label">
+                        CLIENTE (OPCIONAL)
+                    </label>
+                    <input asp-for="Cliente"
+                           class="form-control venta-input"
+                           placeholder="Nombre del cliente (si corresponde)" />
+                    <span asp-validation-for="Cliente" class="field-validation-error"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="MetodoPago" class="form-label venta-label">
+                        MÉTODO DE PAGO
+                    </label>
+                    <select asp-for="MetodoPago" class="form-select venta-input">
+                        @foreach (var metodo in metodos)
+                        {
+                            <option value="@metodo">@metodo</option>
+                        }
+                    </select>
+                    <span asp-validation-for="MetodoPago" class="field-validation-error"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="venta-panel mb-4">
+            <div class="d-flex justify-content-between align-items-center gap-2 mb-4">
+                <div>
+                    <h5 class="venta-title mb-1">Productos de la venta</h5>
+                    <p class="venta-muted small mb-0">Podés agregar varios perfumes.</p>
+                </div>
+
+                <button type="button" class="venta-secondary" id="agregarProducto">
+                    + Agregar perfume
+                </button>
+            </div>
+
+            <div id="productosContainer">
+                @if (Model.Detalles.Count > 0)
+                {
+                    @for (int i = 0; i < Model.Detalles.Count; i++)
+                    {
+                        <div class="producto-row">
+                            <div>
+                                <label class="venta-label">PERFUME</label>
+                                <select name="Detalles[@i].ProductoId" class="form-select venta-input producto-select" required>
+                                    <option value="">Seleccionar perfume</option>
+                                    @foreach (var producto in productos)
+                                    {
+                                        if (Model.Detalles[i].ProductoId == producto.Id)
+                                        {
+                                            <option value="@producto.Id" selected>
+                                                @producto.Nombre · @producto.PrecioVenta.ToString("C0", cultura) · Stock: @producto.Stock
+                                            </option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@producto.Id">
+                                                @producto.Nombre · @producto.PrecioVenta.ToString("C0", cultura) · Stock: @producto.Stock
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div>
+                                <label class="venta-label">CANTIDAD</label>
+                                <input type="number"
+                                       name="Detalles[@i].Cantidad"
+                                       class="form-control venta-input cantidad-input"
+                                       min="1"
+                                       value="@Model.Detalles[i].Cantidad"
+                                       required />
+                            </div>
+                            <button type="button" class="venta-secondary quitar-producto" title="Quitar producto">×</button>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="producto-row">
+                        <div>
+                            <label class="venta-label">PERFUME</label>
+                            <select name="Detalles[0].ProductoId" class="form-select venta-input producto-select" required>
+                                <option value="">Seleccionar perfume</option>
+                                @foreach (var producto in productos)
+                                {
+                                    <option value="@producto.Id">
+                                        @producto.Nombre · @producto.PrecioVenta.ToString("C0", cultura) · Stock: @producto.Stock
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                        <div>
+                            <label class="venta-label">CANTIDAD</label>
+                            <input type="number" name="Detalles[0].Cantidad" class="form-control venta-input cantidad-input" min="1" value="1" required />
+                        </div>
+                        <button type="button" class="venta-secondary quitar-producto" title="Quitar producto">×</button>
+                    </div>
+                }
+            </div>
+
+            @if (!productos.Any())
+            {
+                <p class="text-warning small mt-3">
+                    No hay perfumes activos con existencias disponibles. Agregá unidades al inventario antes de registrar una venta.
+                </p>
+            }
+        </div>
+
+        <div class="venta-panel d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <div class="venta-muted small">TOTAL DE LA VENTA</div>
+                <div class="venta-total" id="totalVenta">₡0</div>
+                <small class="venta-muted">El total definitivo se calcula en el servidor.</small>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+                <a asp-action="Index" class="venta-secondary text-decoration-none">
+                    Cancelar
+                </a>
+
+                <button type="submit" class="venta-btn" @(productos.Any() ? "" : "disabled")>
+                    Confirmar venta
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="mt-4">
+        <a asp-controller="Home" asp-action="Index" class="venta-muted text-decoration-none">
+            ← Volver al Dashboard
+        </a>
+    </div>
+</div>
+
+<template id="productoTemplate">
+    <div class="producto-row">
+        <div>
+            <label class="venta-label">PERFUME</label>
+            <select class="form-select venta-input producto-select" required>
+                <option value="">Seleccionar perfume</option>
+                @foreach (var producto in productos)
+                {
+                    <option value="@producto.Id"
+                            data-precio="@producto.PrecioVenta.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+                        @producto.Nombre · @producto.PrecioVenta.ToString("C0", cultura) · Stock: @producto.Stock
+                    </option>
+                }
+            </select>
+        </div>
+        <div>
+            <label class="venta-label">CANTIDAD</label>
+            <input type="number" class="form-control venta-input cantidad-input" min="1" value="1" required />
+        </div>
+        <button type="button" class="venta-secondary quitar-producto" title="Quitar producto">×</button>
+    </div>
+</template>
+
+<script>
+    const container = document.getElementById('productosContainer');
+    const template = document.getElementById('productoTemplate');
+    const totalElemento = document.getElementById('totalVenta');
+
+    function actualizarIndices() {
+        const filas = container.querySelectorAll('.producto-row');
+
+        filas.forEach((fila, indice) => {
+            fila.querySelector('.producto-select').name =
+                `Detalles[${indice}].ProductoId`;
+
+            fila.querySelector('.cantidad-input').name =
+                `Detalles[${indice}].Cantidad`;
+        });
+    }
+
+    function calcularTotal() {
+        let total = 0;
+
+        container.querySelectorAll('.producto-row').forEach(fila => {
+            const select = fila.querySelector('.producto-select');
+            const cantidad = Number(fila.querySelector('.cantidad-input').value) || 0;
+            const precio = Number(
+                select.selectedOptions[0]?.dataset.precio || 0
+            );
+
+            total += precio * cantidad;
+        });
+
+        totalElemento.textContent = new Intl.NumberFormat('es-CR', {
+            style: 'currency',
+            currency: 'CRC',
+            maximumFractionDigits: 0
+        }).format(total);
+    }
+
+    document.getElementById('agregarProducto').addEventListener('click', () => {
+        const nuevaFila = template.content.cloneNode(true);
+        container.appendChild(nuevaFila);
+        actualizarIndices();
+        calcularTotal();
+    });
+
+    container.addEventListener('click', event => {
+        if (event.target.classList.contains('quitar-producto')) {
+            const filas = container.querySelectorAll('.producto-row');
+
+            if (filas.length > 1) {
+                event.target.closest('.producto-row').remove();
+                actualizarIndices();
+                calcularTotal();
+            }
+        }
+    });
+
+    container.addEventListener('change', calcularTotal);
+    container.addEventListener('input', calcularTotal);
+
+    actualizarIndices();
+    calcularTotal();
+</script>

@@ -1,0 +1,426 @@
+﻿@{
+    ViewData["Title"] = "Finanzas";
+
+    var cuentas = ViewBag.Cuentas as IEnumerable<AdminBareSkin.Models.CuentaFinanciera>
+        ?? Enumerable.Empty<AdminBareSkin.Models.CuentaFinanciera>();
+
+    var saldos = ViewBag.Saldos as Dictionary<int, decimal>
+        ?? new Dictionary<int, decimal>();
+
+    var movimientos = ViewBag.Movimientos as IEnumerable<AdminBareSkin.Models.MovimientoFinanciero>
+        ?? Enumerable.Empty<AdminBareSkin.Models.MovimientoFinanciero>();
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Finanzas | Bare Skin</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                background: #101010;
+                color: #f5f0e8;
+                font-family: 'DM Sans', sans-serif;
+            }
+
+            .navbar {
+                background: #090909;
+                border-bottom: 1px solid #443927;
+                padding: 22px 5%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .brand {
+                color: #d8b779;
+                font-family: 'Playfair Display', serif;
+                font-size: 27px;
+                letter-spacing: 4px;
+                text-decoration: none;
+            }
+
+                .brand small {
+                    display: block;
+                    font: 10px 'DM Sans', sans-serif;
+                    letter-spacing: 3px;
+                    margin-top: 3px;
+                }
+
+            .nav-links {
+                display: flex;
+                gap: 22px;
+            }
+
+                .nav-links a {
+                    color: #d8c6a2;
+                    text-decoration: none;
+                    font-size: 12px;
+                }
+
+            .container-page {
+                width: 94%;
+                max-width: 1400px;
+                margin: 35px auto;
+            }
+
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 18px;
+                margin-bottom: 25px;
+            }
+
+            .eyebrow {
+                color: #c6ad80;
+                font-size: 12px;
+                letter-spacing: 2px;
+            }
+
+            h1, h2 {
+                font-family: 'Playfair Display', serif;
+                font-weight: 500;
+                color: #e5c58b;
+            }
+
+            h1 {
+                font-size: 34px;
+                margin: 8px 0;
+            }
+
+            h2 {
+                font-size: 21px;
+                margin-top: 0;
+            }
+
+            .subtitle {
+                color: #bcb5aa;
+            }
+
+            .btn {
+                display: inline-block;
+                padding: 12px 18px;
+                background: #d3b477;
+                color: #15120d;
+                border-radius: 7px;
+                text-decoration: none;
+                font-weight: 700;
+                border: 0;
+                cursor: pointer;
+                font-family: inherit;
+            }
+
+                .btn:hover {
+                    background: #e6ca91;
+                    color: #15120d;
+                }
+
+            .btn-secondary {
+                background: transparent;
+                border: 1px solid #8f7549;
+                color: #e4c88e;
+            }
+
+            .stats {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+                margin-bottom: 22px;
+            }
+
+            .card {
+                background: #191714;
+                border: 1px solid #443927;
+                border-radius: 12px;
+                padding: 22px;
+            }
+
+            .stat-label {
+                color: #c6ad80;
+                font-size: 12px;
+                margin-bottom: 12px;
+            }
+
+            .stat-value {
+                color: #e8c783;
+                font-family: 'Playfair Display', serif;
+                font-size: 25px;
+            }
+
+            .positive {
+                color: #8dcc9b;
+            }
+
+            .negative {
+                color: #e58b83;
+            }
+
+            .accounts {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 14px;
+                margin-bottom: 22px;
+            }
+
+            .account-name {
+                color: #d8c6a2;
+                font-size: 14px;
+                margin-bottom: 12px;
+            }
+
+            .account-balance {
+                color: #e8c783;
+                font-family: 'Playfair Display', serif;
+                font-size: 23px;
+            }
+
+            .section {
+                background: #191714;
+                border: 1px solid #443927;
+                border-radius: 12px;
+                padding: 23px;
+                margin-bottom: 22px;
+            }
+
+            .actions {
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+                margin-bottom: 22px;
+            }
+
+            .recommendation {
+                border-left: 3px solid #d3b477;
+                background: #211e19;
+                color: #e4d5b8;
+                padding: 17px;
+                border-radius: 5px;
+                margin-bottom: 22px;
+            }
+
+            .table-wrapper {
+                overflow-x: auto;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                min-width: 700px;
+            }
+
+            th {
+                color: #d4ad69;
+                font-size: 11px;
+                text-align: left;
+                padding: 13px 9px;
+                border-bottom: 1px solid #51432e;
+            }
+
+            td {
+                padding: 14px 9px;
+                border-bottom: 1px solid #332d24;
+                font-size: 13px;
+            }
+
+            .alert {
+                padding: 14px;
+                border-radius: 7px;
+                margin-bottom: 18px;
+            }
+
+            .success {
+                background: #1d3024;
+                border: 1px solid #416c4e;
+                color: #b8e2c1;
+            }
+
+            .error {
+                background: #351d1d;
+                border: 1px solid #814444;
+                color: #f0b7b7;
+            }
+
+            .muted {
+                color: #aaa092;
+            }
+
+            @@media(max-width: 900px) {
+                .stats, .accounts {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+
+            @@media(max-width: 600px) {
+                .navbar, .header {
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
+
+                .container-page {
+                    width: 92%;
+                }
+
+                .stats, .accounts {
+                    grid-template-columns: 1fr 1fr;
+                }
+
+                .stat-value {
+                    font-size: 21px;
+                }
+
+                .section {
+                    padding: 16px 12px;
+                }
+
+                .actions .btn {
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+    </style>
+</head>
+
+<body>
+    <header class="navbar">
+        <a asp-controller="Home" asp-action="Index" class="brand">
+            BARE SKIN
+            <small>PERFUMERÍA & FRAGANCIAS</small>
+        </a>
+
+        <nav class="nav-links">
+            <a asp-controller="Home" asp-action="Index">DASHBOARD</a>
+            <a asp-controller="Inventario" asp-action="Index">INVENTARIO</a>
+            <a asp-controller="Ventas" asp-action="Index">VENTAS</a>
+        </nav>
+    </header>
+
+    <main class="container-page">
+        <div class="header">
+            <div>
+                <div class="eyebrow">BARE SKIN · ADMINISTRACIÓN</div>
+                <h1>Finanzas</h1>
+                <div class="subtitle">Control financiero · @ViewBag.MesActual</div>
+            </div>
+
+            <a asp-action="CrearGasto" class="btn">+ Registrar gasto</a>
+        </div>
+
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="alert success">@TempData["Mensaje"]</div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert error">@TempData["Error"]</div>
+        }
+
+        <div class="stats">
+            <div class="card">
+                <div class="stat-label">VENTAS DEL MES</div>
+                <div class="stat-value">₡@(((decimal)ViewBag.TotalVentas).ToString("N0"))</div>
+            </div>
+
+            <div class="card">
+                <div class="stat-label">GANANCIA BRUTA</div>
+                <div class="stat-value positive">₡@(((decimal)ViewBag.GananciaBruta).ToString("N0"))</div>
+            </div>
+
+            <div class="card">
+                <div class="stat-label">GASTOS OPERATIVOS</div>
+                <div class="stat-value">₡@(((decimal)ViewBag.GastosOperativos).ToString("N0"))</div>
+            </div>
+
+            <div class="card">
+                <div class="stat-label">GANANCIA NETA OPERATIVA</div>
+                <div class="stat-value @(((decimal)ViewBag.GananciaNeta) >= 0 ? "positive" : "negative")">
+                    ₡@(((decimal)ViewBag.GananciaNeta).ToString("N0"))
+                </div>
+            </div>
+        </div>
+
+        <div class="recommendation">
+            <strong>Análisis del negocio:</strong>
+            @ViewBag.Recomendacion
+        </div>
+
+        <h2>Cuentas financieras</h2>
+
+        <div class="accounts">
+            @foreach (var cuenta in cuentas)
+            {
+                var saldo = saldos.ContainsKey(cuenta.Id) ? saldos[cuenta.Id] : 0m;
+
+                <div class="card">
+                    <div class="account-name">@cuenta.Nombre</div>
+                    <div class="account-balance">₡@saldo.ToString("N0")</div>
+                    <div class="muted" style="font-size:11px;margin-top:7px">
+                        Saldo calculado por movimientos registrados
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="actions">
+            <a asp-action="CrearGasto" class="btn">Registrar gasto</a>
+            <a asp-action="Historial" class="btn btn-secondary">Historial financiero</a>
+            <a asp-action="Cierres" class="btn btn-secondary">Cierres mensuales</a>
+        </div>
+
+        <section class="section">
+            <h2>Movimientos del mes</h2>
+
+            @if (movimientos.Any())
+            {
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>FECHA</th>
+                                <th>CONCEPTO</th>
+                                <th>CATEGORÍA</th>
+                                <th>CUENTA</th>
+                                <th>TIPO</th>
+                                <th>MONTO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var movimiento in movimientos)
+                            {
+                                <tr>
+                                    <td>@movimiento.FechaRegistro.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                                    <td>@movimiento.Concepto</td>
+                                    <td>@movimiento.Categoria</td>
+                                    <td>@movimiento.CuentaFinanciera.Nombre</td>
+                                    <td class="@(movimiento.Tipo == "Ingreso" ? "positive" : "negative")">
+                                        @movimiento.Tipo
+                                    </td>
+                                    <td>₡@movimiento.Monto.ToString("N0")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="muted">Todavía no hay movimientos financieros este mes.</p>
+            }
+        </section>
+
+        <a asp-controller="Home" asp-action="Index" class="muted">
+            ← Volver al Dashboard
+        </a>
+    </main>
+</body>
+</html>

@@ -1,0 +1,312 @@
+﻿@model IEnumerable<AdminBareSkin.Models.MovimientoFinanciero>
+
+@{
+    Layout = null;
+    var movimientos = Model ?? Enumerable.Empty<AdminBareSkin.Models.MovimientoFinanciero>();
+    var ingresos = movimientos.Where(m => m.Tipo == "Ingreso").Sum(m => m.Monto);
+    var egresos = movimientos.Where(m => m.Tipo == "Egreso").Sum(m => m.Monto);
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Historial financiero | Bare Skin</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                background: #101010;
+                color: #f5eee2;
+                font-family: 'DM Sans', sans-serif;
+            }
+
+            header {
+                padding: 25px 5%;
+                border-bottom: 1px solid #403322;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .brand {
+                color: #d9b875;
+                font: 700 27px 'Playfair Display',serif;
+                letter-spacing: 3px;
+            }
+
+                .brand small {
+                    display: block;
+                    font: 10px 'Playfair Display',serif;
+                    letter-spacing: 3px;
+                    margin-top: 4px;
+                }
+
+            nav a {
+                color: #e9d5ad;
+                text-decoration: none;
+                margin-left: 25px;
+                font-size: 12px;
+            }
+
+            main {
+                max-width: 1250px;
+                margin: 45px auto;
+                padding: 0 25px;
+            }
+
+            .eyebrow {
+                color: #d9b875;
+                letter-spacing: 2px;
+                font-size: 12px;
+            }
+
+            h1, h2 {
+                font-family: 'Playfair Display',serif;
+                color: #e4c486;
+                font-weight: 500;
+            }
+
+            h1 {
+                font-size: 38px;
+                margin: 10px 0;
+            }
+
+            .subtitle {
+                color: #c8c0b4;
+            }
+
+            .cards {
+                display: grid;
+                grid-template-columns: repeat(3,1fr);
+                gap: 15px;
+                margin: 30px 0;
+            }
+
+            .card, .panel {
+                background: #191816;
+                border: 1px solid #493a27;
+                border-radius: 12px;
+                padding: 22px;
+            }
+
+                .card span {
+                    color: #cbb991;
+                    font-size: 12px;
+                }
+
+            .amount {
+                display: block;
+                margin-top: 12px;
+                font: 26px 'Playfair Display',serif;
+                color: #e6c47e;
+            }
+
+            .green {
+                color: #78d6a7;
+            }
+
+            .red {
+                color: #ff8585;
+            }
+
+            .panel {
+                overflow-x: auto;
+            }
+
+                .panel h2 {
+                    margin-top: 0;
+                }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                min-width: 850px;
+            }
+
+            th {
+                text-align: left;
+                color: #d9b875;
+                font-size: 11px;
+                padding: 15px 10px;
+                border-bottom: 1px solid #493a27;
+            }
+
+            td {
+                padding: 15px 10px;
+                border-bottom: 1px solid #393127;
+                font-size: 13px;
+            }
+
+            .empty {
+                text-align: center;
+                color: #bdb4a5;
+                padding: 35px;
+            }
+
+            .pill {
+                padding: 5px 9px;
+                border-radius: 20px;
+                font-size: 11px;
+            }
+
+            .income {
+                color: #79d6a7;
+                background: #173326;
+            }
+
+            .expense {
+                color: #ff8585;
+                background: #391e1e;
+            }
+
+            .actions {
+                display: flex;
+                gap: 12px;
+                margin: 25px 0;
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                display: inline-block;
+                padding: 12px 18px;
+                border-radius: 7px;
+                background: #d7b574;
+                color: #17130d;
+                text-decoration: none;
+                font-weight: 700;
+                font-size: 13px;
+            }
+
+            .btn-outline {
+                background: transparent;
+                color: #e2c17f;
+                border: 1px solid #9a7945;
+            }
+
+            footer {
+                margin-top: 25px;
+            }
+
+                footer a {
+                    color: #d9b875;
+                }
+
+            @@media(max-width:700px) {
+                header {
+                    align-items: flex-start;
+                    gap: 15px;
+                    flex-direction: column;
+                }
+
+                nav a {
+                    margin: 0 15px 0 0;
+                }
+
+                .cards {
+                    grid-template-columns: 1fr;
+                }
+
+                main {
+                    margin-top: 30px;
+                }
+            }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">BARE SKIN<small>PERFUMERÍA & FRAGANCIAS</small></div>
+        <nav>
+            <a asp-controller="Home" asp-action="Index">DASHBOARD</a>
+            <a asp-controller="Inventario" asp-action="Index">INVENTARIO</a>
+            <a asp-controller="Ventas" asp-action="Index">VENTAS</a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="eyebrow">BARE SKIN · ADMINISTRACIÓN</div>
+        <h1>Historial financiero</h1>
+        <p class="subtitle">Registro general de ingresos y egresos del negocio.</p>
+
+        <div class="cards">
+            <div class="card">
+                <span>TOTAL DE INGRESOS</span>
+                <strong class="amount green">@ingresos.ToString("C2")</strong>
+            </div>
+            <div class="card">
+                <span>TOTAL DE EGRESOS</span>
+                <strong class="amount red">@egresos.ToString("C2")</strong>
+            </div>
+            <div class="card">
+                <span>BALANCE DE MOVIMIENTOS</span>
+                <strong class="amount">@((ingresos - egresos).ToString("C2"))</strong>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a asp-controller="Finanzas" asp-action="Index" class="btn btn-outline">Volver a Finanzas</a>
+            <a asp-controller="Finanzas" asp-action="CrearGasto" class="btn">+ Registrar gasto</a>
+        </div>
+
+        <section class="panel">
+            <h2>Todos los movimientos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>FECHA</th>
+                        <th>CONCEPTO</th>
+                        <th>DESCRIPCIÓN</th>
+                        <th>CATEGORÍA</th>
+                        <th>CUENTA</th>
+                        <th>TIPO</th>
+                        <th>MONTO</th>
+                        <th>REGISTRADO POR</th>
+                        <th>AUTORIZADO POR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!movimientos.Any())
+                    {
+                        <tr><td colspan="9" class="empty">Todavía no hay movimientos registrados.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var movimiento in movimientos)
+                        {
+                            <tr>
+                                <td>@movimiento.FechaRegistro.AddHours(-6).ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@movimiento.Concepto</td>
+                                <td>@movimiento.Descripcion</td>
+                                <td>@movimiento.Categoria</td>
+                                <td>@movimiento.CuentaFinanciera?.Nombre</td>
+                                <td>
+                                    @if (movimiento.Tipo == "Ingreso")
+                                    {
+                                        <span class="pill income">Ingreso</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="pill expense">Egreso</span>
+                                    }
+                                </td>
+                                <td>@movimiento.Monto.ToString("C2")</td>
+                                <td>@movimiento.RegistradoPor</td>
+                                <td>@movimiento.AutorizadoPor</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </section>
+
+        <footer>
+            <a asp-controller="Finanzas" asp-action="Index">← Volver al panel financiero</a>
+        </footer>
+    </main>
+</body>
+</html>

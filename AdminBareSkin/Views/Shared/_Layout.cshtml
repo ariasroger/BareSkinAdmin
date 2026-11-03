@@ -1,0 +1,251 @@
+﻿
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] | BARE SKIN</title>
+
+    <script type="importmap"></script>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/AdminBareSkin.styles.css" asp-append-version="true" />
+
+    <style>
+            :root {
+                --bs-black: #101010;
+                --bs-panel: #191919;
+                --bs-gold: #c7a878;
+                --bs-gold-light: #dfc69e;
+                --bs-cream: #f5f0e8;
+                --bs-muted: #a39a8e;
+                --bs-border: #39332b;
+            }
+
+            html {
+                min-height: 100%;
+                background: var(--bs-black);
+            }
+
+            body {
+                min-height: 100vh;
+                margin: 0;
+                background: var(--bs-black) !important;
+                color: var(--bs-cream) !important;
+                font-family: 'Segoe UI', Arial, sans-serif;
+            }
+
+            header {
+                background: #0b0b0b;
+            }
+
+            .luxury-navbar {
+                background: #0b0b0b !important;
+                border-bottom: 1px solid #39332b !important;
+                min-height: 78px;
+                padding: 12px 35px;
+                box-shadow: 0 5px 25px #00000040;
+            }
+
+            .luxury-brand {
+                color: var(--bs-gold-light) !important;
+                font-family: Georgia, serif;
+                font-size: 25px;
+                letter-spacing: 4px;
+                text-decoration: none;
+                font-weight: 600;
+            }
+
+            .brand-subtitle {
+                display: block;
+                color: #96836a;
+                font-size: 9px;
+                letter-spacing: 3px;
+                margin-top: 2px;
+            }
+
+            .luxury-navbar .nav-link {
+                color: #c6b9a6 !important;
+                font-size: 12px;
+                letter-spacing: 1px;
+                padding: 12px 16px !important;
+                transition: .2s;
+            }
+
+                .luxury-navbar .nav-link:hover {
+                    color: var(--bs-gold-light) !important;
+                }
+
+            .luxury-navbar .navbar-toggler {
+                border: 1px solid var(--bs-gold);
+            }
+
+            .luxury-navbar .navbar-toggler-icon {
+                filter: invert(1);
+            }
+
+            .main-container {
+                width: 100%;
+                max-width: 1600px;
+                margin: auto;
+                padding: 0 25px;
+                min-height: calc(100vh - 150px);
+                background: transparent;
+            }
+
+            main {
+                padding-top: 10px;
+                padding-bottom: 45px;
+            }
+
+            .luxury-footer {
+                background: #0b0b0b;
+                border-top: 1px solid #39332b;
+                color: #8e8374;
+                padding: 22px 15px;
+                font-size: 11px;
+                letter-spacing: 1px;
+            }
+
+                .luxury-footer a {
+                    color: var(--bs-gold);
+                    text-decoration: none;
+                }
+
+                    .luxury-footer a:hover {
+                        color: white;
+                    }
+
+            /* Unificar fondos de Bootstrap */
+            .bg-white,
+            .bg-light {
+                background-color: #191919 !important;
+            }
+
+            .text-dark {
+                color: var(--bs-cream) !important;
+            }
+
+            .card {
+                background: var(--bs-panel);
+                color: var(--bs-cream);
+                border-color: var(--bs-border);
+            }
+
+            .form-control,
+            .form-select {
+                background-color: #111 !important;
+                color: var(--bs-cream) !important;
+                border-color: #494137 !important;
+            }
+
+                .form-control::placeholder {
+                    color: #82796e !important;
+                }
+
+            .table {
+                --bs-table-color: var(--bs-cream);
+                --bs-table-bg: transparent;
+                --bs-table-border-color: var(--bs-border);
+            }
+
+            @@media (max-width: 768px) {
+                .luxury-navbar {
+                    padding: 12px 17px;
+                }
+
+                .luxury-brand {
+                    font-size: 21px;
+                }
+
+                .main-container {
+                    padding: 0 10px;
+                }
+
+                .luxury-navbar .navbar-collapse {
+                    background: #111;
+                    border-top: 1px solid var(--bs-border);
+                    margin-top: 12px;
+                    padding: 10px;
+                }
+            }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <nav class="navbar navbar-expand-lg luxury-navbar">
+            <div class="container-fluid">
+
+                <a class="navbar-brand luxury-brand"
+                   asp-controller="Home"
+                   asp-action="Index">
+
+                    BARE SKIN
+                    <span class="brand-subtitle">
+                        PERFUMERÍA & FRAGANCIAS
+                    </span>
+                </a>
+
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#bareSkinNavigation"
+                        aria-controls="bareSkinNavigation"
+                        aria-expanded="false"
+                        aria-label="Abrir navegación">
+
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse"
+                     id="bareSkinNavigation">
+
+                    <ul class="navbar-nav ms-auto">
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="Home"
+                               asp-action="Index">
+                                DASHBOARD
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="Inventario"
+                               asp-action="Index">
+                                INVENTARIO
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="main-container">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="luxury-footer">
+        <div class="container-fluid text-center">
+            BARE SKIN · PERFUMERÍA & FRAGANCIAS · 2026
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

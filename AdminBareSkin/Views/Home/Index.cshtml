@@ -1,0 +1,778 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "BARE SKIN | Panel principal";
+
+    var nombreUsuario = User.Identity?.Name ?? "Administrador";
+    var totalProductos = ViewBag.TotalProductos ?? 0;
+    var totalUnidades = ViewBag.TotalUnidades ?? 0;
+    decimal valorInventario = ViewBag.ValorInventario ?? 0m;
+    decimal valorVenta = ViewBag.ValorVenta ?? 0m;
+
+    var cultura = System.Globalization.CultureInfo.GetCultureInfo("es-CR");
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BARE SKIN | Administración</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+            :root {
+                --bg: #0b0b0a;
+                --panel: #151513;
+                --gold: #c8aa72;
+                --gold-light: #e4cc9d;
+                --text: #f4efe5;
+                --muted: #969083;
+                --border: rgba(200,170,114,.17);
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                min-height: 100vh;
+                background: radial-gradient(ellipse at 80% 0%, rgba(190,155,95,.07), transparent 35%), var(--bg);
+                color: var(--text);
+                font-family: 'DM Sans', sans-serif;
+            }
+
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+
+            .dashboard {
+                display: flex;
+                min-height: 100vh;
+            }
+
+            .sidebar {
+                width: 265px;
+                min-width: 265px;
+                background: #121211;
+                border-right: 1px solid var(--border);
+                padding: 35px 22px 25px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .brand {
+                padding: 0 10px 48px;
+            }
+
+            .brand-name {
+                font-family: 'Playfair Display', serif;
+                font-size: 31px;
+                letter-spacing: 4px;
+            }
+
+                .brand-name span {
+                    color: var(--gold);
+                }
+
+            .brand small {
+                display: block;
+                margin-top: 7px;
+                font-size: 8px;
+                letter-spacing: 3px;
+                color: var(--muted);
+            }
+
+            .menu-label {
+                padding: 0 11px 17px;
+                color: #887d68;
+                font-size: 9px;
+                letter-spacing: 2px;
+                font-weight: 700;
+            }
+
+            .menu {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .menu-item {
+                display: flex;
+                align-items: center;
+                gap: 13px;
+                padding: 14px 13px;
+                border-radius: 8px;
+                color: #aaa396;
+                font-size: 12px;
+                transition: .25s;
+            }
+
+                .menu-item .icon {
+                    width: 23px;
+                    text-align: center;
+                    color: var(--gold);
+                    font-size: 17px;
+                }
+
+                .menu-item.active {
+                    background: linear-gradient(100deg, #332b1e, #28231b);
+                    color: var(--gold-light);
+                    border: 1px solid rgba(200,170,114,.16);
+                }
+
+                .menu-item:hover {
+                    background: rgba(200,170,114,.09);
+                    color: var(--gold-light);
+                }
+
+            .sidebar-bottom {
+                margin-top: auto;
+                padding-top: 22px;
+                border-top: 1px solid var(--border);
+            }
+
+            .user-profile {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: grid;
+                place-items: center;
+                color: var(--gold-light);
+                background: #332b1e;
+                border: 1px solid rgba(200,170,114,.3);
+                font-family: 'Playfair Display', serif;
+            }
+
+            .user-profile strong {
+                font-size: 11px;
+                display: block;
+            }
+
+            .user-profile small {
+                display: block;
+                margin-top: 4px;
+                font-size: 9px;
+                color: var(--muted);
+            }
+
+            .main {
+                flex: 1;
+                min-width: 0;
+                padding: 32px 42px;
+            }
+
+            .topbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding-bottom: 25px;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .eyebrow {
+                font-size: 9px;
+                color: var(--gold);
+                letter-spacing: 2px;
+                font-weight: 600;
+            }
+
+            .topbar h1 {
+                margin-top: 8px;
+                font-family: 'Playfair Display', serif;
+                font-size: 27px;
+                font-weight: 400;
+            }
+
+            .top-user {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
+                border: 1px solid var(--border);
+                border-radius: 9px;
+                background: rgba(255,255,255,.015);
+            }
+
+            .status-dot {
+                width: 8px;
+                height: 8px;
+                background: #8ca77d;
+                border-radius: 50%;
+                box-shadow: 0 0 10px rgba(140,167,125,.5);
+            }
+
+            .top-user strong {
+                font-size: 11px;
+                display: block;
+            }
+
+            .top-user small {
+                font-size: 9px;
+                color: var(--muted);
+                display: block;
+                margin-top: 4px;
+            }
+
+            .welcome {
+                position: relative;
+                overflow: hidden;
+                margin-top: 30px;
+                padding: 37px;
+                min-height: 190px;
+                border: 1px solid rgba(200,170,114,.3);
+                border-radius: 13px;
+                background: radial-gradient(circle at 85% 50%, rgba(200,170,114,.13), transparent 30%), linear-gradient(115deg, #29241c, #171613);
+                display: flex;
+                align-items: center;
+                box-shadow: 0 20px 50px rgba(0,0,0,.2);
+            }
+
+            .welcome-content {
+                position: relative;
+                z-index: 2;
+            }
+
+            .welcome h2 {
+                font-family: 'Playfair Display', serif;
+                font-size: 36px;
+                font-weight: 400;
+                margin: 13px 0 10px;
+            }
+
+                .welcome h2 span {
+                    color: var(--gold-light);
+                }
+
+            .welcome p {
+                color: #b2aa9b;
+                font-size: 11px;
+                line-height: 1.8;
+            }
+
+            .welcome-mark {
+                position: absolute;
+                right: 55px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-family: 'Playfair Display', serif;
+                font-size: 145px;
+                color: var(--gold);
+                opacity: .075;
+            }
+
+            .section-heading {
+                display: flex;
+                align-items: end;
+                justify-content: space-between;
+                margin: 38px 0 18px;
+            }
+
+                .section-heading h3 {
+                    font-family: 'Playfair Display', serif;
+                    font-size: 23px;
+                    font-weight: 400;
+                }
+
+                .section-heading p {
+                    color: var(--muted);
+                    font-size: 10px;
+                    margin-top: 6px;
+                }
+
+            .period {
+                color: var(--gold);
+                border: 1px solid var(--border);
+                border-radius: 5px;
+                padding: 9px 13px;
+                font-size: 9px;
+                letter-spacing: 1px;
+            }
+
+            .stats {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0,1fr));
+                gap: 16px;
+            }
+
+            .stat-card {
+                position: relative;
+                overflow: hidden;
+                padding: 23px;
+                background: linear-gradient(145deg, #1c1b18, #141412);
+                border: 1px solid var(--border);
+                border-radius: 11px;
+                transition: .3s;
+            }
+
+                .stat-card:hover {
+                    transform: translateY(-4px);
+                    border-color: rgba(200,170,114,.5);
+                    box-shadow: 0 15px 35px rgba(0,0,0,.25);
+                }
+
+            .stat-top {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .stat-title {
+                color: #aaa292;
+                font-size: 9px;
+                letter-spacing: 1px;
+            }
+
+            .stat-icon {
+                width: 37px;
+                height: 37px;
+                display: grid;
+                place-items: center;
+                background: #30291e;
+                color: var(--gold-light);
+                border-radius: 8px;
+                font-size: 17px;
+            }
+
+            .stat-value {
+                margin-top: 23px;
+                font-family: 'Playfair Display', serif;
+                font-size: 31px;
+                color: #f0e5d0;
+            }
+
+            .stat-description {
+                margin-top: 8px;
+                color: #827c71;
+                font-size: 9px;
+            }
+
+            .modules {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0,1fr));
+                gap: 16px;
+            }
+
+            .module-link {
+                display: block;
+                text-decoration: none;
+                color: inherit;
+                min-width: 0;
+            }
+
+                .module-link:hover {
+                    color: inherit;
+                }
+
+            .module-card {
+                height: 100%;
+                padding: 24px;
+                background: linear-gradient(145deg, #1b1a17, #141412);
+                border: 1px solid var(--border);
+                border-radius: 11px;
+                transition: .3s;
+            }
+
+                .module-card:hover {
+                    transform: translateY(-5px);
+                    border-color: rgba(200,170,114,.5);
+                    box-shadow: 0 15px 35px rgba(0,0,0,.25);
+                }
+
+            .module-icon {
+                width: 45px;
+                height: 45px;
+                display: grid;
+                place-items: center;
+                border-radius: 9px;
+                background: #30291e;
+                color: var(--gold-light);
+                font-size: 21px;
+            }
+
+            .module-card h4 {
+                margin-top: 19px;
+                font-family: 'Playfair Display', serif;
+                font-size: 20px;
+                font-weight: 400;
+            }
+
+            .module-card p {
+                min-height: 48px;
+                margin-top: 9px;
+                color: #a49d90;
+                font-size: 10px;
+                line-height: 1.8;
+            }
+
+            .module-card small {
+                display: block;
+                margin-top: 14px;
+                color: var(--gold);
+                font-size: 8px;
+                letter-spacing: 1.2px;
+            }
+
+            .footer {
+                display: flex;
+                justify-content: space-between;
+                gap: 15px;
+                margin-top: 40px;
+                padding: 20px 0 5px;
+                border-top: 1px solid var(--border);
+                color: #726c60;
+                font-size: 8px;
+                letter-spacing: 1px;
+            }
+
+            @@media(max-width: 1200px) {
+                .stats, .modules {
+                    grid-template-columns: repeat(2, minmax(0,1fr));
+                }
+
+                .main {
+                    padding: 28px;
+                }
+            }
+
+            @@media(max-width: 700px) {
+                .dashboard {
+                    display: block;
+                }
+
+                .sidebar {
+                    width: 100%;
+                    min-width: 0;
+                    padding: 18px;
+                }
+
+                .brand {
+                    padding: 0 5px 18px;
+                }
+
+                .menu-label, .sidebar-bottom {
+                    display: none;
+                }
+
+                .menu {
+                    flex-direction: row;
+                    overflow-x: auto;
+                    padding-bottom: 5px;
+                }
+
+                .menu-item {
+                    flex-shrink: 0;
+                    padding: 11px;
+                    font-size: 10px;
+                }
+
+                .main {
+                    padding: 20px 15px;
+                }
+
+                .topbar h1 {
+                    font-size: 23px;
+                }
+
+                .top-user {
+                    padding: 9px;
+                }
+
+                    .top-user strong {
+                        max-width: 110px;
+                        overflow-wrap: anywhere;
+                    }
+
+                .welcome {
+                    min-height: 160px;
+                    padding: 24px 20px;
+                }
+
+                    .welcome h2 {
+                        font-size: 27px;
+                    }
+
+                .welcome-mark {
+                    right: 8px;
+                    font-size: 95px;
+                }
+
+                .stats, .modules {
+                    grid-template-columns: 1fr;
+                }
+
+                .period {
+                    display: none;
+                }
+
+                .footer {
+                    flex-direction: column;
+                }
+            }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-name">BARE <span>SKIN</span></div>
+                <small>PERFUMERÍA & FRAGANCIAS</small>
+            </div>
+
+            <div class="menu-label">MENÚ PRINCIPAL</div>
+
+            <nav class="menu">
+                <a asp-controller="Home" asp-action="Index" class="menu-item active">
+                    <span class="icon">⌂</span>
+                    Dashboard
+                </a>
+
+                <a asp-controller="Inventario" asp-action="Index" class="menu-item">
+                    <span class="icon">▤</span>
+                    Inventario
+                </a>
+
+                <a asp-controller="Ventas" asp-action="Index" class="menu-item">
+                    <span class="icon">▧</span>
+                    Ventas
+                </a>
+
+                <a asp-controller="Finanzas" asp-action="Index" class="menu-item">
+                    <span class="icon">₡</span>
+                    Finanzas
+                </a>
+
+                <a asp-controller="Finanzas" asp-action="Reporte" class="menu-item">
+                    <span class="icon">◎</span>
+                    Reportes
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="user-profile">
+                    <div class="avatar">B</div>
+                    <div>
+                        <strong>@nombreUsuario</strong>
+                        <small>Administrador</small>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main">
+
+            <header class="topbar">
+                <div>
+                    <div class="eyebrow">BARE SKIN · ADMINISTRACIÓN</div>
+                    <h1>Panel principal</h1>
+                </div>
+
+                <div class="top-user">
+                    <span class="status-dot"></span>
+                    <div>
+                        <strong>@nombreUsuario</strong>
+                        <small>Sesión activa</small>
+                    </div>
+                </div>
+            </header>
+
+            <section class="welcome">
+                <div class="welcome-content">
+                    <div class="eyebrow">BIENVENIDO A BARE SKIN</div>
+                    <h2>La elegancia está en <span>cada detalle.</span></h2>
+                    <p>
+                        Administrá tu inventario y mantené el control de tu negocio
+                        desde un solo lugar.
+                    </p>
+                </div>
+
+                <div class="welcome-mark">B</div>
+            </section>
+
+            <section>
+                <div class="section-heading">
+                    <div>
+                        <h3>Resumen general</h3>
+                        <p>Información actual de tu negocio</p>
+                    </div>
+
+                    <div class="period">INFORMACIÓN EN TIEMPO REAL</div>
+                </div>
+
+                <div class="stats">
+
+                    <article class="stat-card">
+                        <div class="stat-top">
+                            <span class="stat-title">PRODUCTOS ACTIVOS</span>
+                            <div class="stat-icon">◇</div>
+                        </div>
+                        <div class="stat-value" id="totalProductos">
+                            @totalProductos
+                        </div>
+                        <div class="stat-description">
+                            Perfumes registrados en el sistema
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-top">
+                            <span class="stat-title">UNIDADES DISPONIBLES</span>
+                            <div class="stat-icon">▤</div>
+                        </div>
+                        <div class="stat-value" id="totalUnidades">
+                            @totalUnidades
+                        </div>
+                        <div class="stat-description">
+                            Unidades disponibles en inventario
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-top">
+                            <span class="stat-title">VALOR DEL INVENTARIO</span>
+                            <div class="stat-icon">₡</div>
+                        </div>
+                        <div class="stat-value" id="valorInventario">
+                            @valorInventario.ToString("C0", cultura)
+                        </div>
+                        <div class="stat-description">
+                            Valor total calculado según el costo de compra
+                        </div>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-top">
+                            <span class="stat-title">VALOR POTENCIAL DE VENTA</span>
+                            <div class="stat-icon">↗</div>
+                        </div>
+                        <div class="stat-value" id="valorVenta">
+                            @valorVenta.ToString("C0", cultura)
+                        </div>
+                        <div class="stat-description">
+                            Ingreso potencial si se vende todo el inventario
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+
+            <section>
+                <div class="section-heading">
+                    <div>
+                        <h3>Módulos de trabajo</h3>
+                        <p>Accedé a las herramientas de administración</p>
+                    </div>
+                </div>
+
+                <div class="modules">
+
+                    <a asp-controller="Inventario" asp-action="Index" class="module-link">
+                        <div class="module-card">
+                            <div class="module-icon">▤</div>
+                            <h4>Inventario</h4>
+                            <p>Registrá perfumes, controlá existencias, costos y precios de venta.</p>
+                            <small>ADMINISTRAR INVENTARIO →</small>
+                        </div>
+                    </a>
+
+                    <a asp-controller="Ventas" asp-action="Index" class="module-link">
+                        <div class="module-card">
+                            <div class="module-icon">▧</div>
+                            <h4>Ventas</h4>
+                            <p>Registrá operaciones, controlá pagos y consultá las ganancias de tu perfumería.</p>
+                            <small>ADMINISTRAR VENTAS →</small>
+                        </div>
+                    </a>
+
+                    <a asp-controller="Finanzas" asp-action="Index" class="module-link">
+                        <div class="module-card">
+                            <div class="module-icon">₡</div>
+                            <h4>Finanzas</h4>
+                            <p>Controlá ingresos, gastos, cuentas, rentabilidad y cierres mensuales.</p>
+                            <small>ADMINISTRAR FINANZAS →</small>
+                        </div>
+                    </a>
+
+                    <a asp-controller="Finanzas" asp-action="Reporte" class="module-link">
+                        <div class="module-card">
+                            <div class="module-icon">◎</div>
+                            <h4>Reportes</h4>
+                            <p>Consultá ventas, ganancias, gastos y el rendimiento financiero de Bare Skin.</p>
+                            <small>CONSULTAR REPORTES →</small>
+                        </div>
+                    </a>
+
+                </div>
+            </section>
+
+            <footer class="footer">
+                <span>BARE SKIN · PERFUMERÍA & FRAGANCIAS</span>
+                <span>GESTIÓN Y CONTROL DEL NEGOCIO</span>
+            </footer>
+
+        </main>
+    </div>
+
+    <script>
+            async function actualizarResumen() {
+                try {
+                    const respuesta = await fetch('@Url.Action("ValorInventario", "Home")', {
+                        method: 'GET',
+                        cache: 'no-store',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (!respuesta.ok) {
+                        throw new Error('No se pudo consultar el inventario.');
+                    }
+
+                    const datos = await respuesta.json();
+
+                    const valorInventario = Number(datos.valorInventario ?? 0);
+                    const valorVenta = Number(datos.valorVenta ?? 0);
+                    const totalProductos = Number(datos.totalProductos ?? 0);
+                    const totalUnidades = Number(datos.totalUnidades ?? 0);
+
+                    const formatoMoneda = new Intl.NumberFormat('es-CR', {
+                        style: 'currency',
+                        currency: 'CRC',
+                        maximumFractionDigits: 0
+                    });
+
+                    document.getElementById('valorInventario').textContent =
+                        formatoMoneda.format(Number.isFinite(valorInventario) ? valorInventario : 0);
+
+                    document.getElementById('valorVenta').textContent =
+                        formatoMoneda.format(Number.isFinite(valorVenta) ? valorVenta : 0);
+
+                    document.getElementById('totalProductos').textContent =
+                        Number.isFinite(totalProductos) ? totalProductos : 0;
+
+                    document.getElementById('totalUnidades').textContent =
+                        Number.isFinite(totalUnidades) ? totalUnidades : 0;
+
+                } catch (error) {
+                    console.error('Error actualizando el Dashboard:', error);
+                }
+            }
+
+            actualizarResumen();
+            setInterval(actualizarResumen, 10000);
+    </script>
+</body>
+</html>
